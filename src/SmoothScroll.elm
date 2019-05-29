@@ -34,11 +34,9 @@ defaultConfig =
     Config { duration = 500, easing = Ease.inOutQuint }
 
 
-{-| Create a smooth scroll configuration type. Can be useful if you
-want to create a string primarly by consing, perhaps for decoding
-something.
+{-| Create a smooth scroll configuration type.
 
-    fromList [ 'e', 'l', 'm' ] == "elm"
+    createConfig Ease.outCubic 100 == Config { duration = 100, easing = Ease.outCubic }
 
 -}
 createConfig : Easing -> Int -> Config
