@@ -6,7 +6,6 @@ module SmoothScroll exposing
 
 import Browser.Dom
 import Ease exposing (Easing)
-import Internal.SmoothScroll exposing (step)
 import Task exposing (Task)
 import Time exposing (Posix)
 
