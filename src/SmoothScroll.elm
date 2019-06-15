@@ -1,8 +1,10 @@
-module SmoothScroll exposing
-    ( Config
-    , defaultConfig
-    , scrollTo
-    )
+module SmoothScroll exposing (Config, createConfig, scrollTo)
+
+{-| Scrolling to position that always takes the same amount of time.
+
+@docs Config, createConfig, scrollTo
+
+-}
 
 import Browser.Dom
 import Ease exposing (Easing)
@@ -10,32 +12,23 @@ import Task exposing (Task)
 import Time exposing (Posix)
 
 
-{-|
-
-  - duration: The total duration of the scroll in milliseconds.
-  - easing: [Easing functions](https://package.elm-lang.org/packages/elm-community/easing-functions/latest)
-    specify the rate of change of a parameter over time.
-
+{-| Configuration for smooth scrolling.
 -}
 type Config
     = Config { duration : Int, easing : Easing }
 
 
-{-|
+{-| Create a smooth scroll configuration from an easing function and a duration
+in milliseconds.
 
-    defaultConfig : Config
-    defaultConfig =
-        { duration = 500, easing = Ease.inOutQuint }
+  - easing: [Easing functions](https://package.elm-lang.org/packages/elm-community/easing-functions/latest)
+    specify the rate of change of a parameter over time.
 
--}
-defaultConfig : Config
-defaultConfig =
-    Config { duration = 500, easing = Ease.inOutQuint }
+  - duration: The total duration of the scroll in milliseconds.
 
-
-{-| Create a smooth scroll configuration type.
-
-    createConfig Ease.outCubic 100 == Config { duration = 100, easing = Ease.outCubic }
+```
+createConfig Ease.outCubic 100
+```
 
 -}
 createConfig : Easing -> Int -> Config
@@ -45,6 +38,9 @@ createConfig easing duration =
 
 {-| Scroll to the `y` offset of the browser viewport using the easing function
 and duration specified in the config.
+
+    scrollTo (createConfig Ease.outCubic 100) 500
+
 -}
 scrollTo : Config -> Float -> Task x ()
 scrollTo (Config config) y =

@@ -30,7 +30,7 @@ type Msg
 
 scrollTo : Float -> Task x ()
 scrollTo =
-    SmoothScroll.scrollTo SmoothScroll.defaultConfig
+    SmoothScroll.scrollTo <| SmoothScroll.createConfig Ease.inOutQuint 500
 
 
 scrollToTop : Cmd Msg
