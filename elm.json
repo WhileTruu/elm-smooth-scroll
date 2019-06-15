@@ -1,7 +1,7 @@
 {
     "type": "package",
     "name": "WhileTruu/elm-smooth-scroll",
-    "summary": "Scrolling to position that always takes a fixed amount of time.",
+    "summary": "Scrolling to position that always takes the same amount of time.",
     "license": "BSD-3-Clause",
     "version": "1.0.0",
     "exposed-modules": [

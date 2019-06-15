@@ -1,7 +1,6 @@
 # SmoothScroll
 
-Scrolling to position that always takes a fixed amount of time.
-
+Scrolling to position that always takes the same amount of time.
 
 ### [Demo](https://whiletruu.github.io/elm-smooth-scroll/)
 
