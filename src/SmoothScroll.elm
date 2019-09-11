@@ -1,8 +1,8 @@
-module SmoothScroll exposing (Config, createConfig, scrollTo)
+module SmoothScroll exposing (Config, createConfig, scrollTo, scrollToOf)
 
 {-| Scrolling to position that always takes the same amount of time.
 
-@docs Config, createConfig, scrollTo
+@docs Config, createConfig, scrollTo, scrollToOf
 
 -}
 
@@ -46,9 +46,30 @@ scrollTo : Config -> Float -> Task x ()
 scrollTo (Config config) y =
     Task.map2
         (\{ viewport } startTime ->
-            Time.now |> Task.andThen (step config viewport.y y startTime)
+            Task.andThen
+                (step Browser.Dom.setViewport config viewport.y y startTime)
+                Time.now
         )
         Browser.Dom.getViewport
+        Time.now
+        |> Task.andThen identity
+
+
+{-| Scroll to the `y` offset of a DOM node's viewport by ID using the easing
+function and duration specified in the config.
+
+    scrollToOf (createConfig Ease.outCubic 100) "mynode" 500
+
+-}
+scrollToOf : Config -> String -> Float -> Task Browser.Dom.Error ()
+scrollToOf (Config config) id y =
+    Task.map2
+        (\{ viewport } startTime ->
+            Task.andThen
+                (step (Browser.Dom.setViewportOf id) config viewport.y y startTime)
+                Time.now
+        )
+        (Browser.Dom.getViewportOf id)
         Time.now
         |> Task.andThen identity
 
@@ -56,17 +77,24 @@ scrollTo (Config config) y =
 {-| Change the `y` offset of the browser viewport to the calculated position and
 then do that again and again until the duration is larger than the time elapsed.
 -}
-step : { duration : Int, easing : Easing } -> Float -> Float -> Posix -> Posix -> Task x ()
-step config start end startTime now =
+step :
+    (Float -> Float -> Task x ())
+    -> { duration : Int, easing : Easing }
+    -> Float
+    -> Float
+    -> Posix
+    -> Posix
+    -> Task x ()
+step f config start end startTime now =
     let
         elapsed : Int
         elapsed =
             Time.posixToMillis now - Time.posixToMillis startTime
     in
-    Browser.Dom.setViewport 0 (position config start end elapsed)
+    f 0 (position config start end elapsed)
         |> Task.andThen
             (if elapsed < config.duration then
-                \_ -> Time.now |> Task.andThen (step config start end startTime)
+                \_ -> Time.now |> Task.andThen (step f config start end startTime)
 
              else
                 Task.succeed
