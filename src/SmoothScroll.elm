@@ -46,7 +46,9 @@ scrollTo : Config -> Float -> Task x ()
 scrollTo (Config config) y =
     Task.map2
         (\{ viewport } startTime ->
-            Time.now |> Task.andThen (step config viewport.y y startTime)
+            Task.andThen
+                (step (Browser.Dom.setViewport viewport.x) config viewport.y y startTime)
+                Time.now
         )
         Browser.Dom.getViewport
         Time.now
@@ -56,17 +58,24 @@ scrollTo (Config config) y =
 {-| Change the `y` offset of the browser viewport to the calculated position and
 then do that again and again until the duration is larger than the time elapsed.
 -}
-step : { duration : Int, easing : Easing } -> Float -> Float -> Posix -> Posix -> Task x ()
-step config start end startTime now =
+step :
+    (Float -> Task x ())
+    -> { duration : Int, easing : Easing }
+    -> Float
+    -> Float
+    -> Posix
+    -> Posix
+    -> Task x ()
+step setViewportY config start end startTime now =
     let
         elapsed : Int
         elapsed =
             Time.posixToMillis now - Time.posixToMillis startTime
     in
-    Browser.Dom.setViewport 0 (position config start end elapsed)
+    setViewportY (position config start end elapsed)
         |> Task.andThen
             (if elapsed < config.duration then
-                \_ -> Time.now |> Task.andThen (step config start end startTime)
+                \_ -> Time.now |> Task.andThen (step setViewportY config start end startTime)
 
              else
                 Task.succeed
