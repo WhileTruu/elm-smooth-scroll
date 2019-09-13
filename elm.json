@@ -3,7 +3,7 @@
     "name": "WhileTruu/elm-smooth-scroll",
     "summary": "Scrolling to position that always takes the same amount of time.",
     "license": "BSD-3-Clause",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "exposed-modules": [
         "SmoothScroll"
     ],
